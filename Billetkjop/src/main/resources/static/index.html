@@ -1,0 +1,55 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="index.css">
+    <title>Cinema Ticket Booking</title>
+</head>
+<body>
+<h1>Cinema Ticket Booking</h1>
+<form id="ticketForm">
+    <div>
+        <label for="movie">Choose a movie:</label>
+        <select id="movie" required>
+            <option value="">Select a movie</option>
+            <option value="Dune Part Two">Dune Part Two</option>
+            <option value="Konvoi">Konvoi</option>
+            <option value="Insomnia">Insomnia</option>
+            <option value="Night Swim">Night Swim</option>
+            <option value="Oppenheimer">Oppenheimer</option>
+        </select>
+    </div>
+    <div>
+        <label for="amount">Amounts:</label>
+        <input type="number" id="amount" min="1" max="10" required>
+    </div>
+    <div>
+        <label>First name:</label>
+        <input type="text" id="firstName" required>
+    </div>
+    <div>
+        <label>Last name:</label>
+        <input type="text" id="lastName"  required>
+    </div>
+    <div>
+        <label>Phone Number:</label>
+        <input type="tel" id="phone"  required>
+    </div>
+    <div>
+        <label>Email:</label>
+        <input type="email" id="email" placeholder="Example@gmail.com" required>
+    </div>
+    <button type="button" onclick="buyTickets()">Buy Tickets</button>
+</form>
+<button type="button" onclick="clearOrders()">Clear Saved Orders</button>
+
+<h2>Saved Orders</h2>
+<div id="ordersContainer">
+    <!-- Saved orders will be displayed here -->
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
