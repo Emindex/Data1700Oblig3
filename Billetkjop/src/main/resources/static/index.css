@@ -89,3 +89,7 @@ li {
 li:last-child {
     border-bottom: none;
 }
+.error-message {
+    color: red;
+    margin-left: 10px;
+}

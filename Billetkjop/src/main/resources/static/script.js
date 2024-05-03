@@ -1,35 +1,62 @@
+$(function() {
+    updateOrdersDisplay()
+});
 
 let orders = []; // Array to hold the order information
 
+    document.addEventListener('DOMContentLoaded', function() {
+    getTickets();
+});
 function isValidEmail(email) {
-    // Simple email validation (for more complex validation, consider using a regex pattern)
-    return email.includes('@') && email.includes('.');
+    const pattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return pattern.test(email);
 }
-
 function isValidPhoneNumber(phone) {
-    // Check if the phone number is exactly 8 digits
-    return /^\d{8}$/.test(phone);
+    const pattern = /^(\d{8}|\d{4}[-\s]?\d{4})$/;
+    return pattern.test(phone);
+}
+function isValidfirstName(firstName) {
+    const pattern = /^[a-zA-Z\s-]+$/;
+    return pattern.test(firstName);
+}
+function isValidlastName(lastName) {
+    const pattern = /^[a-zA-Z\s-]+$/;
+    return pattern.test(lastName);
 }
 
 function updateOrdersDisplay() {
     const ordersContainer = document.getElementById('ordersContainer');
     ordersContainer.innerHTML = ''; // Clear the current display
 
-    if (orders.length === 0) {
-        ordersContainer.innerHTML = '<p>No orders saved.</p>';
-        return;
-    }
-
     const list = document.createElement('ul');
-    orders.forEach(order => {
-        const item = document.createElement('li');
-        item.textContent = `Movie: ${order.movie}, Tickets: ${order.amount}, Name: ${order.firstName} ${order.lastName}, Phone: ${order.phone}, Email: ${order.email}`;
-        list.appendChild(item);
+    $.get('/get', function (res) {
+
+        if (res.length === 0) {
+            ordersContainer.innerHTML = '<p>No orders saved.</p>';
+            return;
+        }
+
+        for (let i = 0; i < res.length; i++) {
+            const order = res[i]
+            const item = document.createElement('li');
+            item.textContent = `Movie: ${order.movie}, Tickets: ${order.amount}, Name: ${order.firstName} ${order.lastName}, Email: ${order.email}`;
+            list.appendChild(item);
+        }
     });
+
     ordersContainer.appendChild(list);
 }
+function displayError(inputId, message) {
+    const errorSpanId = inputId + '-error';
+    const errorSpan = document.getElementById(errorSpanId);
+    errorSpan.textContent = message;
+}
 
+function clearError(inputId) {
+    displayError(inputId, '');
+}
 function buyTickets() {
+    let hasError = false;
     const movie = document.getElementById('movie').value;
     const amount = document.getElementById('amount').value;
     const firstName = document.getElementById('firstName').value;
@@ -38,30 +65,55 @@ function buyTickets() {
     const email = document.getElementById('email').value;
 
     if (!isValidEmail(email)) {
-        alert('Please enter a valid email address.');
-        return;
+        displayError('email', 'Please enter a valid email address.');
+        hasError = true;
+    } else {
+        clearError('email');
     }
 
     if (!isValidPhoneNumber(phone)) {
-        alert('Please enter a valid phone number');
-        return;
+        displayError('phone', 'Please enter a valid phone number.');
+        hasError = true;
+    } else {
+        clearError('phone');
+    }
+    if (!isValidfirstName(firstName)) {
+        displayError('firstName', 'Please enter a valid first name.');
+        hasError = true;
+    } else {
+        clearError('firstName');
     }
 
-    const order = {movie, amount, firstName, lastName, phone, email};
-    orders.push(order);
-    updateOrdersDisplay();
-    $.post('/save', order
-    )
-    alert('Ticket(s) purchased successfully!');
+    if (!isValidlastName(lastName)) {
+        displayError('lastName', 'Please enter a valid last name.');
+        hasError = true;
+    } else {
+        clearError('lastName');
+    }
+
+    if (!hasError) {
+        const order = { movie, amount, firstName, lastName, phone, email };
+        updateOrdersDisplay();
+        $.post('/save', order);
+        alert('Ticket(s) purchased successfully!');
+    }
+
+
+}
+function getTickets() {
+    $.get('/get', function() {
+        orders = '';
+        updateOrdersDisplay();
+    })
 }
 
 function clearOrders() {
-    orders = [];
-    updateOrdersDisplay();
-    $.post('/delete')
-    alert('Saved orders cleared!');
+    $.post('/delete',function () {
+        orders = [];
+        updateOrdersDisplay();
+        alert('Saved orders cleared!');
+    });
 }
 
 
 
-updateOrdersDisplay();
